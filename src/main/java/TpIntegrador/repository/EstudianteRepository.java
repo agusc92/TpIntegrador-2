@@ -4,6 +4,7 @@ import TpIntegrador.Factory.JPAUtil;
 import TpIntegrador.modelo.Estudiante;
 import com.opencsv.CSVReader;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 
 import java.io.FileReader;
 import java.util.ArrayList;
@@ -57,5 +58,41 @@ public class EstudianteRepository {
                 .getResultList();
         em.close();
         return personas;
+    }
+
+    public Estudiante buscarPorLu(int lu){
+        EntityManager em = JPAUtil.getEntityManager();
+        TypedQuery<Estudiante> query = em.createQuery(
+                "SELECT e FROM Estudiante e WHERE e.lu = :nroLibreta", Estudiante.class);
+        query.setParameter("nroLibreta", lu);
+        Estudiante estudiante = query.getSingleResult();
+        return estudiante
+        ;
+    }
+
+    public List<Estudiante> buscarPorGenero(String genero){
+        EntityManager em = JPAUtil.getEntityManager();
+        TypedQuery<Estudiante> query = em.createQuery(
+                "SELECT e FROM Estudiante e WHERE e.genero = :genero", Estudiante.class);
+        query.setParameter("genero", genero); // o "M", "No Binario", etc.
+        List<Estudiante> estudiantes = query.getResultList();
+
+        return estudiantes
+                ;
+    }
+
+    public List<Estudiante> obtenerPorCiudad(String carrera, String ciudad){
+        EntityManager em = JPAUtil.getEntityManager();
+        TypedQuery<Estudiante> query = em.createQuery(
+                "SELECT ce.estudiante " +
+                        "FROM Estudiante_Carrera ce " +
+                        "WHERE ce.carrera.nombre = :nombreCarrera " +
+                        "AND ce.estudiante.ciudad = :ciudad", Estudiante.class);
+
+        query.setParameter("nombreCarrera", carrera);
+        query.setParameter("ciudad", ciudad);
+
+        List<Estudiante> estudiantes = query.getResultList();
+        return estudiantes;
     }
 }

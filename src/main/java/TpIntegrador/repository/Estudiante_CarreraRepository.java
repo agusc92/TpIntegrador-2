@@ -8,6 +8,7 @@ import com.opencsv.CSVReader;
 import jakarta.persistence.EntityManager;
 
 import java.io.FileReader;
+import java.util.List;
 
 public class Estudiante_CarreraRepository {
 
@@ -66,4 +67,18 @@ public class Estudiante_CarreraRepository {
         em.persist(eC);
         em.getTransaction().commit();
     }
+
+    public List<Object[]> ordenarPorInscriptos(){
+        EntityManager em = JPAUtil.getEntityManager();
+        List<Object[]> resultados = em.createQuery(
+                        "SELECT ce.carrera, COUNT(ce.estudiante) " +
+                                "FROM Estudiante_Carrera ce " +
+                                "GROUP BY ce.carrera " +
+                                "ORDER BY COUNT(ce.estudiante) DESC", Object[].class)
+                .getResultList();
+
+        return resultados;
+    }
+
+
 }

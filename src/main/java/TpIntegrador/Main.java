@@ -1,7 +1,10 @@
 package TpIntegrador;
 
 import TpIntegrador.Factory.JPAUtil;
+import TpIntegrador.dto.ReporteDTO;
+import TpIntegrador.modelo.Carrera;
 import TpIntegrador.modelo.Estudiante;
+import TpIntegrador.modelo.Estudiante_Carrera;
 import TpIntegrador.repository.CarreraRepository;
 import TpIntegrador.repository.EstudianteRepository;
 import TpIntegrador.repository.Estudiante_CarreraRepository;
@@ -36,6 +39,35 @@ public class Main {
 
         for(Estudiante e : estudiantes){
             System.out.println(e);
+        }
+        System.out.println("///////////////////////////////");
+        System.out.println(eR.buscarPorLu(72976));
+        System.out.println("///////////////////////////////");
+        for(Estudiante e :eR.buscarPorGenero("Male") ){
+            System.out.println(e);
+        }
+        System.out.println("///////////////////////////////");
+        /*
+        Es necesario devolver el Object con la carrera y los estudiantes o
+        se puede solo devolver las carreras??
+        */
+
+        for (Object[] fila : eCR.ordenarPorInscriptos()) {
+            Carrera carrera = (Carrera) fila[0];
+            Long cantidadInscriptos = (Long) fila[1];
+            System.out.println(carrera.getNombre() + " - " + cantidadInscriptos + " inscriptos");
+        }
+        System.out.println("///////////////////////////////");
+        List<Estudiante> e2 = eR.obtenerPorCiudad("TUDAI","Rauch");
+
+        for(Estudiante e : e2){
+            System.out.println(e);
+        }
+        System.out.println("///////////////////////////////");
+        List<ReporteDTO> reportes = cR.obtenerInforme();
+
+        for(ReporteDTO rT : reportes){
+            System.out.println(rT);
         }
 
     }

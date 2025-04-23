@@ -57,6 +57,7 @@ public class Estudiante {
                 ", nombre='" + nombre + '\'' +
                 ", apellido='" + apellido + '\'' +
                 ", edad=" + edad +
+                ", genero=" + genero +
                 '}';
     }
 }
