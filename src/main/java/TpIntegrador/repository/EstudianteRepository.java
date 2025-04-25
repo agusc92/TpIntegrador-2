@@ -1,6 +1,7 @@
 package TpIntegrador.repository;
 
 import TpIntegrador.Factory.JPAUtil;
+import TpIntegrador.dto.EstudianteDTO;
 import TpIntegrador.modelo.Estudiante;
 import com.opencsv.CSVReader;
 import jakarta.persistence.EntityManager;
@@ -49,50 +50,61 @@ public class EstudianteRepository {
             em.getTransaction().begin();
             em.persist(estudiante);
             em.getTransaction().commit();
+        System.out.println("Estudiante insertado con exito");
     }
 
-    public List<Estudiante> estudiantesPorEdad(){
+    public List<EstudianteDTO> estudiantesPorEdad(){
         EntityManager em = JPAUtil.getEntityManager();
-        List<Estudiante> personas = em.createQuery(
-                        "SELECT e FROM Estudiante e ORDER BY e.edad", Estudiante.class)
+        List<EstudianteDTO> estudianteDTOS = new ArrayList<>();
+        estudianteDTOS= em.createQuery(
+                        "SELECT new TpIntegrador.dto.EstudianteDTO(e.dni,e.lu, e.nombre, e.apellido, e.edad, e.genero, e.ciudad) " +
+                                "FROM Estudiante e " +
+                                "ORDER BY e.edad",
+                        EstudianteDTO.class)
                 .getResultList();
         em.close();
-        return personas;
+        return estudianteDTOS;
+
     }
 
-    public Estudiante buscarPorLu(int lu){
+    public EstudianteDTO buscarPorLu(int lu){
         EntityManager em = JPAUtil.getEntityManager();
+        EstudianteDTO estDTO;
         TypedQuery<Estudiante> query = em.createQuery(
                 "SELECT e FROM Estudiante e WHERE e.lu = :nroLibreta", Estudiante.class);
         query.setParameter("nroLibreta", lu);
         Estudiante estudiante = query.getSingleResult();
-        return estudiante
-        ;
+        estDTO = new EstudianteDTO(estudiante.getDni(), estudiante.getLu(), estudiante.getNombre(),estudiante.getApellido(),estudiante.getEdad(),estudiante.getGenero(),estudiante.getCiudad());
+        return estDTO;
     }
 
-    public List<Estudiante> buscarPorGenero(String genero){
+    public List<EstudianteDTO> buscarPorGenero(String genero){
         EntityManager em = JPAUtil.getEntityManager();
-        TypedQuery<Estudiante> query = em.createQuery(
-                "SELECT e FROM Estudiante e WHERE e.genero = :genero", Estudiante.class);
-        query.setParameter("genero", genero); // o "M", "No Binario", etc.
-        List<Estudiante> estudiantes = query.getResultList();
+        List<EstudianteDTO> estudiantes = new ArrayList<>();
+        estudiantes = em.createQuery(
+                        "SELECT new TpIntegrador.dto.EstudianteDTO(e.dni, e.lu, e.nombre, e.apellido, e.edad, e.genero, e.ciudad) " +
+                                "FROM Estudiante e WHERE e.genero = :genero",
+                        EstudianteDTO.class
+                ).setParameter("genero", genero)
+                .getResultList();
 
-        return estudiantes
-                ;
+        return estudiantes;
     }
 
-    public List<Estudiante> obtenerPorCiudad(String carrera, String ciudad){
+    public List<EstudianteDTO> obtenerPorCiudad(String carrera, String ciudad){
         EntityManager em = JPAUtil.getEntityManager();
-        TypedQuery<Estudiante> query = em.createQuery(
-                "SELECT ce.estudiante " +
-                        "FROM Estudiante_Carrera ce " +
-                        "WHERE ce.carrera.nombre = :nombreCarrera " +
-                        "AND ce.estudiante.ciudad = :ciudad", Estudiante.class);
+        List<EstudianteDTO> estudiantes = new ArrayList<>();
+        estudiantes = em.createQuery(
+                        "SELECT new TpIntegrador.dto.EstudianteDTO(ce.estudiante.dni, ce.estudiante.lu, ce.estudiante.nombre, ce.estudiante.apellido, ce.estudiante.edad, ce.estudiante.genero, ce.estudiante.ciudad) " +
+                                "FROM Estudiante_Carrera ce " +
+                                "WHERE ce.carrera.nombre = :nombreCarrera " +
+                                "AND ce.estudiante.ciudad = :ciudad",
+                        EstudianteDTO.class
+                ).setParameter("nombreCarrera", carrera)
+                .setParameter("ciudad", ciudad)
+                .getResultList();
 
-        query.setParameter("nombreCarrera", carrera);
-        query.setParameter("ciudad", ciudad);
 
-        List<Estudiante> estudiantes = query.getResultList();
         return estudiantes;
     }
 }

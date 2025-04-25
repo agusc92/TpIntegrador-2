@@ -1,6 +1,8 @@
 package TpIntegrador;
 
 import TpIntegrador.Factory.JPAUtil;
+import TpIntegrador.dto.CarreraPorInscriptosDTO;
+import TpIntegrador.dto.EstudianteDTO;
 import TpIntegrador.dto.ReporteDTO;
 import TpIntegrador.modelo.Carrera;
 import TpIntegrador.modelo.Estudiante;
@@ -29,46 +31,58 @@ public class Main {
         eR.insertarDesdeCSV("src/main/resources/estudiantes.csv");
         cR.insertarDesdeCSV("src/main/resources/carreras.csv");
         eCR.insertarDesdeCSV("src/main/resources/estudianteCarrera.csv");
+        
+
+//        System.out.println("a) dar de alta un estudiante");
+//        Estudiante e1 = new Estudiante("Agustin","La Battaglia",33,36798366,"masculino","necochea",534897);
+//        eR.insertar(e1);
 
 
-        Estudiante e1 = new Estudiante("Agustin","La Battaglia",33,36798366,"masculino","necochea",534897);
-        eR.insertar(e1);
-        eCR.insertar(44708235,1,2022);
 
-        List<Estudiante> estudiantes = eR.estudiantesPorEdad();
+//        System.out.println("b) matricular un estudiante en una carrera");
+//        eCR.insertar(36798366,1,2022);
 
-        for(Estudiante e : estudiantes){
-            System.out.println(e);
-        }
-        System.out.println("///////////////////////////////");
+
+        System.out.println("//////////////////////////");
+        System.out.println("c) recuperar todos los estudiantes, y especificar algún criterio de ordenamiento simple -> Edad");
+
+        for(EstudianteDTO cPI: eR.estudiantesPorEdad())
+            System.out.println(cPI);
+
+        System.out.println("//////////////////////////");
+        System.out.println("d) recuperar un estudiante, en base a su número de libreta universitaria.");
+
         System.out.println(eR.buscarPorLu(72976));
-        System.out.println("///////////////////////////////");
-        for(Estudiante e :eR.buscarPorGenero("Male") ){
-            System.out.println(e);
-        }
-        System.out.println("///////////////////////////////");
-        /*
-        Es necesario devolver el Object con la carrera y los estudiantes o
-        se puede solo devolver las carreras??
-        */
 
-        for (Object[] fila : eCR.ordenarPorInscriptos()) {
-            Carrera carrera = (Carrera) fila[0];
-            Long cantidadInscriptos = (Long) fila[1];
-            System.out.println(carrera.getNombre() + " - " + cantidadInscriptos + " inscriptos");
-        }
-        System.out.println("///////////////////////////////");
-        List<Estudiante> e2 = eR.obtenerPorCiudad("TUDAI","Rauch");
+        System.out.println("//////////////////////////");
+        System.out.println("e) recuperar todos los estudiantes, en base a su género.");
 
-        for(Estudiante e : e2){
-            System.out.println(e);
-        }
-        System.out.println("///////////////////////////////");
+
+        for(EstudianteDTO cPI: eR.buscarPorGenero("male"))
+            System.out.println(cPI);
+
+        System.out.println("//////////////////////////");
+        System.out.println("f) recuperar las carreras con estudiantes inscriptos, y ordenar por cantidad de inscriptos.");
+
+        for(CarreraPorInscriptosDTO cPI: eCR.ordenarPorInscriptos())
+        System.out.println(cPI);
+
+        System.out.println("//////////////////////////");
+        System.out.println("g) recuperar los estudiantes de una determinada carrera, filtrado por ciudad de residencia.");
+
+        for(EstudianteDTO cPI: eR.obtenerPorCiudad("TUDAI","Rauch"))
+            System.out.println(cPI);
+
+        System.out.println("//////////////////////////");
+        System.out.println("3) Generar un reporte de las carreras, que para cada carrera incluya información de los\n" +
+                "inscriptos y egresados por año. Se deben ordenar las carreras alfabéticamente, y presentar\n" +
+                "los años de manera cronológica.");
         List<ReporteDTO> reportes = cR.obtenerInforme();
 
         for(ReporteDTO rT : reportes){
             System.out.println(rT);
         }
+
 
     }
 }

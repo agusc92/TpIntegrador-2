@@ -1,6 +1,7 @@
 package TpIntegrador.repository;
 
 import TpIntegrador.Factory.JPAUtil;
+import TpIntegrador.dto.CarreraPorInscriptosDTO;
 import TpIntegrador.modelo.Carrera;
 import TpIntegrador.modelo.Estudiante;
 import TpIntegrador.modelo.Estudiante_Carrera;
@@ -8,6 +9,7 @@ import com.opencsv.CSVReader;
 import jakarta.persistence.EntityManager;
 
 import java.io.FileReader;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Estudiante_CarreraRepository {
@@ -61,21 +63,29 @@ public class Estudiante_CarreraRepository {
         eC.setEstudiante(estudiante1);
 
         Carrera carrera1 = em.find(Carrera.class , carrera);
-        eC.setCarrera(carrera1);
+        if(carrera1!= null){
+            eC.setCarrera(carrera1);
+        }else {
+
+        }
+
 
 
         em.persist(eC);
         em.getTransaction().commit();
+        System.out.println("Estudiante matriculado con exito");
     }
 
-    public List<Object[]> ordenarPorInscriptos(){
+    public List<CarreraPorInscriptosDTO> ordenarPorInscriptos(){
         EntityManager em = JPAUtil.getEntityManager();
-        List<Object[]> resultados = em.createQuery(
-                        "SELECT ce.carrera, COUNT(ce.estudiante) " +
-                                "FROM Estudiante_Carrera ce " +
-                                "GROUP BY ce.carrera " +
-                                "ORDER BY COUNT(ce.estudiante) DESC", Object[].class)
-                .getResultList();
+        ArrayList<CarreraPorInscriptosDTO> carreraPorInscriptos = new ArrayList<>();
+           List<CarreraPorInscriptosDTO> resultados = em.createQuery(
+                "SELECT new TpIntegrador.dto.CarreraPorInscriptosDTO(ce.carrera.nombre, COUNT(ce.estudiante)) " +
+                        "FROM Estudiante_Carrera ce " +
+                        "GROUP BY ce.carrera.nombre " +
+                        "ORDER BY COUNT(ce.estudiante) DESC",
+                CarreraPorInscriptosDTO.class
+        ).getResultList();
 
         return resultados;
     }

@@ -20,7 +20,7 @@ public class ReporteDTO {
 
     @Override
     public String toString() {
-        return "ReporteDTO{" +
+        return "Reporte{" +
                 "nombreCarrera='" + nombreCarrera + '\'' +
                 ", anio=" + anio +
                 ", inscriptos=" + inscriptos +
