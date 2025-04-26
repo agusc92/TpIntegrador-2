@@ -31,7 +31,7 @@ public class Main {
         eR.insertarDesdeCSV("src/main/resources/estudiantes.csv");
         cR.insertarDesdeCSV("src/main/resources/carreras.csv");
         eCR.insertarDesdeCSV("src/main/resources/estudianteCarrera.csv");
-        
+
 
 //        System.out.println("a) dar de alta un estudiante");
 //        Estudiante e1 = new Estudiante("Agustin","La Battaglia",33,36798366,"masculino","necochea",534897);

@@ -29,7 +29,7 @@ public class CarreraRepository {
 
                 em.persist(carrera);
 
-                //em.flush();
+
 
             }
 
@@ -62,12 +62,5 @@ public class CarreraRepository {
         return reportes;
     }
 
-    /*
 
-                "SELECT ce.carrera.nombre, ce.anio_inscripcion, COUNT(ce)"+
-                "FROM Estudiante_Carrera ce GROUP BY ce.carrera.nombre, ce.anio_inscripcion ORDER BY ce.carrera.nombre, ce.anio_inscripcion", Object[].class);
-
-        TypedQuery<Object[]> query2 = em.createQuery(
-                "SELECT ce.carrera.nombre, ce.anio_graduacion, COUNT(ce) FROM Estudiante_Carrera ce WHERE ce.anio_graduacion IS NOT NULL GROUP BY ce.carrera.nombre, ce.anio_graduacion ORDER BY ce.carrera.nombre, ce.anio_graduacion", Object[].class);
-     */
 }

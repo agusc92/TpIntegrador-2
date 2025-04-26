@@ -1,6 +1,7 @@
 package TpIntegrador.repository;
 
 import TpIntegrador.Factory.JPAUtil;
+import TpIntegrador.dto.CarreraPorInscriptosDTO;
 import TpIntegrador.dto.EstudianteDTO;
 import TpIntegrador.modelo.Estudiante;
 import com.opencsv.CSVReader;
@@ -47,46 +48,72 @@ public class EstudianteRepository {
     public void insertar(Estudiante estudiante){
 
             EntityManager em = JPAUtil.getEntityManager();
+            try{
             em.getTransaction().begin();
             em.persist(estudiante);
             em.getTransaction().commit();
-        System.out.println("Estudiante insertado con exito");
+        System.out.println("Estudiante dado de alta con exito");
+    } catch (Exception e) {
+        System.out.println("Error al dar de alta estudiante" + e.getMessage());
+    } finally {
+        em.close();
+    }
+
     }
 
     public List<EstudianteDTO> estudiantesPorEdad(){
         EntityManager em = JPAUtil.getEntityManager();
         List<EstudianteDTO> estudianteDTOS = new ArrayList<>();
+        try{
         estudianteDTOS= em.createQuery(
                         "SELECT new TpIntegrador.dto.EstudianteDTO(e.dni,e.lu, e.nombre, e.apellido, e.edad, e.genero, e.ciudad) " +
                                 "FROM Estudiante e " +
                                 "ORDER BY e.edad",
                         EstudianteDTO.class)
                 .getResultList();
+    } catch (Exception e) {
+        System.out.println("Error al ordenar estudiantes por edad" + e.getMessage());
+    } finally {
         em.close();
+    }
+
         return estudianteDTOS;
 
     }
 
     public EstudianteDTO buscarPorLu(int lu){
         EntityManager em = JPAUtil.getEntityManager();
-        EstudianteDTO estDTO;
+        EstudianteDTO estDTO  =new EstudianteDTO();
+        try{
         TypedQuery<Estudiante> query = em.createQuery(
                 "SELECT e FROM Estudiante e WHERE e.lu = :nroLibreta", Estudiante.class);
         query.setParameter("nroLibreta", lu);
         Estudiante estudiante = query.getSingleResult();
-        estDTO = new EstudianteDTO(estudiante.getDni(), estudiante.getLu(), estudiante.getNombre(),estudiante.getApellido(),estudiante.getEdad(),estudiante.getGenero(),estudiante.getCiudad());
+            estDTO = new EstudianteDTO(estudiante.getDni(), estudiante.getLu(), estudiante.getNombre(),estudiante.getApellido(),estudiante.getEdad(),estudiante.getGenero(),estudiante.getCiudad());
+    } catch (Exception e) {
+        System.out.println("Error al obtener estudiante por libreta universitaria" + e.getMessage());
+    } finally {
+        em.close();
+    }
+
         return estDTO;
     }
 
     public List<EstudianteDTO> buscarPorGenero(String genero){
         EntityManager em = JPAUtil.getEntityManager();
         List<EstudianteDTO> estudiantes = new ArrayList<>();
+        try{
         estudiantes = em.createQuery(
                         "SELECT new TpIntegrador.dto.EstudianteDTO(e.dni, e.lu, e.nombre, e.apellido, e.edad, e.genero, e.ciudad) " +
                                 "FROM Estudiante e WHERE e.genero = :genero",
                         EstudianteDTO.class
                 ).setParameter("genero", genero)
                 .getResultList();
+    } catch (Exception e) {
+        System.out.println("Error al obtener estudiante por genero" + e.getMessage());
+    } finally {
+        em.close();
+    }
 
         return estudiantes;
     }
@@ -94,6 +121,7 @@ public class EstudianteRepository {
     public List<EstudianteDTO> obtenerPorCiudad(String carrera, String ciudad){
         EntityManager em = JPAUtil.getEntityManager();
         List<EstudianteDTO> estudiantes = new ArrayList<>();
+        try{
         estudiantes = em.createQuery(
                         "SELECT new TpIntegrador.dto.EstudianteDTO(ce.estudiante.dni, ce.estudiante.lu, ce.estudiante.nombre, ce.estudiante.apellido, ce.estudiante.edad, ce.estudiante.genero, ce.estudiante.ciudad) " +
                                 "FROM Estudiante_Carrera ce " +
@@ -103,6 +131,11 @@ public class EstudianteRepository {
                 ).setParameter("nombreCarrera", carrera)
                 .setParameter("ciudad", ciudad)
                 .getResultList();
+    } catch (Exception e) {
+        System.out.println("Error al obtener estudiante por ciudad" + e.getMessage());
+    } finally {
+        em.close();
+    }
 
 
         return estudiantes;

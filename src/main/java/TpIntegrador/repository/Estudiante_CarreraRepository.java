@@ -39,7 +39,7 @@ public class Estudiante_CarreraRepository {
 
                 em.persist(eC);
 
-                //em.flush();
+
 
             }
 
@@ -53,39 +53,53 @@ public class Estudiante_CarreraRepository {
 
     public void insertar(int estudiante,int carrera,int fecha){
         EntityManager em = JPAUtil.getEntityManager();
-        em.getTransaction().begin();
         Estudiante_Carrera eC = new Estudiante_Carrera();
+        try{
+        em.getTransaction().begin();
+
         eC.setAnio_graduacion(0);
         eC.setAnio_inscripcion(fecha);
         eC.setAntiguedad(1);
 
         Estudiante estudiante1 = em.find(Estudiante.class,estudiante);
-        eC.setEstudiante(estudiante1);
-
         Carrera carrera1 = em.find(Carrera.class , carrera);
-        if(carrera1!= null){
+
+        if(carrera1!= null && estudiante1 != null){
             eC.setCarrera(carrera1);
+            eC.setEstudiante(estudiante1);
+            em.persist(eC);
+            em.getTransaction().commit();
+            System.out.println("Estudiante matriculado con exito");
         }else {
-
+            System.out.println("no se encontro la carrera o el estudiante");
         }
+    } catch (Exception e) {
+        System.out.println("Error al matricular estudiante" + e.getMessage());
+    } finally {
+        em.close();
+    }
 
 
 
-        em.persist(eC);
-        em.getTransaction().commit();
-        System.out.println("Estudiante matriculado con exito");
+
     }
 
     public List<CarreraPorInscriptosDTO> ordenarPorInscriptos(){
         EntityManager em = JPAUtil.getEntityManager();
-        ArrayList<CarreraPorInscriptosDTO> carreraPorInscriptos = new ArrayList<>();
-           List<CarreraPorInscriptosDTO> resultados = em.createQuery(
+        List<CarreraPorInscriptosDTO> resultados = new ArrayList<>();
+        try{
+           resultados = em.createQuery(
                 "SELECT new TpIntegrador.dto.CarreraPorInscriptosDTO(ce.carrera.nombre, COUNT(ce.estudiante)) " +
                         "FROM Estudiante_Carrera ce " +
                         "GROUP BY ce.carrera.nombre " +
                         "ORDER BY COUNT(ce.estudiante) DESC",
                 CarreraPorInscriptosDTO.class
         ).getResultList();
+    } catch (Exception e) {
+        System.out.println("Error al obtener carreras por inscriptos" + e.getMessage());
+    } finally {
+        em.close();
+    }
 
         return resultados;
     }
